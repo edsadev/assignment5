@@ -1,0 +1,190 @@
+<!-- Your main page should go here -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/kimeiga/bahunya/dist/bahunya.min.css"
+    />
+    <title>Home</title>
+    <style>
+      body {
+        max-width: 1280px;
+      }
+      nav {
+        justify-content: flex-end;
+      }
+      h1 {
+        margin-bottom: 48px;
+      }
+      p,
+      h2 {
+        margin: 0;
+      }
+      h2 {
+        margin: 12px 0;
+        font-size: 20px;
+      }
+      #cardContainer {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 36px;
+        justify-content: space-around;
+      }
+      .card {
+        background-color: var(--background-alt);
+        border: 1px solid var(--border);
+        max-width: 285px;
+        border-radius: 6px;
+        overflow: hidden;
+      }
+      .card:hover {
+        animation: scaling 0.2s ease-in-out;
+        scale: 1.05;
+        -webkit-box-shadow: 0px 4px 50px 0px var(--links);
+        box-shadow: 0px 4px 50px 0px var(--links);
+      }
+
+      .card .imgContainer {
+        height: 150px;
+        overflow: hidden;
+        background-color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 18px;
+      }
+      .card .imgContainer img {
+        max-height: 100%;
+        max-width: 100%;
+      }
+      .card .cardContent {
+        padding: 18px;
+      }
+      .card .categoryPrice {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      .card .category {
+        color: rgb(153, 153, 153);
+      }
+      .card .price {
+        font-size: 20px;
+        font-weight: bold;
+      }
+      .card .fullDesc.appearing {
+        animation: appearing ease-in 0.2s;
+      }
+      .card .shortDesc .seeMore {
+        cursor: pointer;
+        color: var(--links);
+      }
+      .card .fullDesc.hidden,
+      .card .shortDesc.hidden {
+        max-height: 0px;
+        overflow: hidden;
+      }
+      @keyframes scaling {
+        0% {
+          scale: 1;
+          box-shadow: 0;
+        }
+        100% {
+          scale: 1.05;
+          -webkit-box-shadow: 0px 4px 50px 0px var(--links);
+          box-shadow: 0px 4px 50px 0px var(--links);
+        }
+      }
+      @keyframes appearing {
+        0% {
+          max-height: 0%;
+          opacity: 0;
+        }
+        100% {
+          max-height: 100;
+          opacity: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/honesty">Honesty</a></li>
+        <li><a href="/about">About</a></li>
+      </ul>
+    </nav>
+    <section class="cardSection">
+      <h1>Home page</h1>
+      <div id="cardContainer"></div>
+    </section>
+    <script>
+      const cardContainer = document.getElementById('cardContainer');
+
+      fetch('https://fakestoreapi.com/products')
+        .then((res) => res.json())
+        .then((json) => {
+          json.map((product) => {
+            const card = document.createElement('div');
+            const imgContainer = document.createElement('div');
+            const img = document.createElement('img');
+            const content = document.createElement('div');
+            const name = document.createElement('h2');
+            const price = document.createElement('p');
+            const category = document.createElement('p');
+            const categoryPrice = document.createElement('div');
+            const shortDesc = document.createElement('p');
+            const fullDesc = document.createElement('p');
+            const seeMoreBtn = document.createElement('span');
+
+            card.classList.add('card');
+            imgContainer.classList.add('imgContainer');
+            img.src = product.image;
+            img.alt = product.title;
+            imgContainer.appendChild(img);
+            name.innerText = product.title;
+            price.innerText = `$ ${product.price}`;
+            price.classList.add('price');
+            category.innerText = `${product.category.toUpperCase()}`;
+            category.classList.add('category');
+            categoryPrice.classList.add('categoryPrice');
+            categoryPrice.appendChild(category);
+            categoryPrice.appendChild(price);
+            shortDesc.innerText = product.description.slice(0, 60);
+            shortDesc.classList.add('shortDesc');
+            fullDesc.innerText = product.description;
+            fullDesc.classList.add('fullDesc', 'hidden');
+            seeMoreBtn.innerText = '... see more';
+            seeMoreBtn.classList.add('seeMore');
+            seeMoreBtn.addEventListener('click', () => {
+              const parent = seeMoreBtn.parentNode.parentNode;
+              const sDesc = parent.querySelector('.shortDesc');
+              const fDesc = parent.querySelector('.fullDesc');
+
+              sDesc.classList.add('hidden');
+              fDesc.classList.remove('hidden');
+              fDesc.classList.add('appearing');
+            });
+            shortDesc.appendChild(seeMoreBtn);
+
+            content.classList.add('cardContent');
+
+            content.appendChild(name);
+            content.appendChild(categoryPrice);
+            content.appendChild(shortDesc);
+            content.appendChild(fullDesc);
+
+            card.appendChild(imgContainer);
+            card.appendChild(content);
+
+            cardContainer.appendChild(card);
+          });
+        });
+    </script>
+  </body>
+</html>
